@@ -1,5 +1,6 @@
 import json
 import os
+from operator import index
 
 # get current working directory path
 cwd_path = os.getcwd()
@@ -32,10 +33,30 @@ def linear_search(sequence, wanted):
     return d
 
 
+def binary_search(sequence, wanted):
+    left = min(sequence)
+    left_idx = sequence.index(left)
+    right = max(sequence)
+    right_idx = sequence.index(right)
+    while left != right:
+        middle_idx = round((right_idx + left_idx) / 2)
+        middle = sequence[middle_idx]
+        if wanted > middle:
+            left = middle
+            left_idx = middle_idx + 1
+        elif wanted < middle:
+            right = middle
+            right_idx = middle_idx - 1
+        if wanted == middle:
+            return middle_idx
+    return None
+
+
 def main():
-    sequential_data = read_data('sequential.json', 'unordered_numbers')
+    sequential_data = read_data('sequential.json', 'ordered_numbers')
     print(sequential_data)
-    print(linear_search(sequential_data, 0))
+    print(linear_search(sequential_data, -3))
+    print(binary_search(sequential_data, 90))
 
 
 if __name__ == '__main__':
