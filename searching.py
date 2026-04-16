@@ -1,6 +1,9 @@
 import json
 import os
 from operator import index
+from generators import *
+import time
+import matplotlib.pyplot as plt
 
 # get current working directory path
 cwd_path = os.getcwd()
@@ -34,30 +37,55 @@ def linear_search(sequence, wanted):
 
 
 def binary_search(sequence, wanted):
-    left = min(sequence)
-    left_idx = sequence.index(left)
-    right = max(sequence)
-    right_idx = sequence.index(right)
-    while left != right:
+    left_idx = 0
+    right_idx = len(sequence) - 1
+    while left_idx != right_idx:
         middle_idx = round((right_idx + left_idx) / 2)
-        middle = sequence[middle_idx]
-        if wanted > middle:
-            left = middle
-            left_idx = middle_idx + 1
-        elif wanted < middle:
-            right = middle
-            right_idx = middle_idx - 1
-        if wanted == middle:
+        if wanted == sequence[middle_idx]:
             return middle_idx
+
+        if wanted > sequence[middle_idx]:
+            left_idx = middle_idx + 1
+        elif wanted < sequence[middle_idx]:
+            right_idx = middle_idx - 1
+
     return None
 
 
 def main():
     sequential_data = read_data('sequential.json', 'ordered_numbers')
     print(sequential_data)
-    print(linear_search(sequential_data, -3))
-    print(binary_search(sequential_data, 90))
+    lengths = [100, 500, 1000, 5000, 10000]
+    time_linear = []
+    time_binary = []
+    for length in lengths:
+        generated_data = ordered_sequence(length)
 
+        start_linear = time.perf_counter()
+        linear_search(generated_data, length // 2)
+        end_linear = time.perf_counter()
+        duration_linear = end_linear - start_linear
+        time_linear.append(duration_linear)
+
+        start_binary = time.perf_counter()
+        binary_search(generated_data, length // 2)
+        end_binary = time.perf_counter()
+        duration_binary = end_binary - start_binary
+        time_binary.append(duration_binary)
+
+
+    # time_linear.sort()
+    # time_binary.sort()
+    plt.plot(lengths, time_linear)
+    plt.xlabel('pocet prvku v sekvenci')
+    plt.ylabel('cas [s]')
+    plt.title('graf casu behu linearniho vyhledavani')
+    plt.show()
+    plt.plot(lengths, time_binary)
+    plt.xlabel('pocet prvku v sekvenci')
+    plt.ylabel('cas [s]')
+    plt.title('graf casu behu binarniho vyhledavani')
+    plt.show()
 
 if __name__ == '__main__':
     main()
